@@ -68,13 +68,18 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    // Import the BoM for the Firebase platform
+    // залежності для firebase
     implementation(platform("com.google.firebase:firebase-bom:33.3.0"))
-
-    // Add the dependency for the Firebase Authentication library
-    // When using the BoM, you don't specify versions in Firebase library dependencies
     implementation("com.google.firebase:firebase-auth")
-
-    // Also add the dependency for the Google Play services library and specify its version
     implementation("com.google.android.gms:play-services-auth:21.2.0")
+    // залежності для retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
+    implementation("io.coil-kt:coil-compose:2.2.2")
+
+    implementation ("androidx.compose.foundation:foundation:1.5.0")
+    implementation ("androidx.compose.foundation:foundation-layout:1.5.0")
+    implementation ("androidx.compose.ui:ui:1.5.0")
 }
