@@ -1,5 +1,6 @@
 package com.example.cookup.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,7 +12,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import retrofit2.await
 
 // ViewModel для роботи зі стравами, що отримуються з API
 class MealViewModel : ViewModel() {
@@ -19,48 +19,52 @@ class MealViewModel : ViewModel() {
     var mealsList = mutableStateListOf<Meal>()
         private set
 
-    // Ініціалізація ViewModel, де запускається завантаження всіх страв
-    init {
-        //fetchAllMeals()
-        fetchAllMeals()
-    }
-
-    // Функція для отримання страв за першою літерою
-    private fun fetchMealsByLetter(letter: String) {
-        viewModelScope.launch { // Запускаємо нову корутину в контексті ViewModel
-            try {
-                // Отримання відповіді від API в фоновому потоці
-                val response: MealResponse = withContext(Dispatchers.IO) {
-                    RetrofitInstance.api.searchMealsByLetter(letter).await()
-                }
-
-                // Додаємо одну випадкову страву в mealsList, якщо вони є в відповіді
-                response.meals?.let { meals ->
-                    if (meals.isNotEmpty()) {
-                        val randomMeal = meals.random() // Вибираємо випадкову страву
-                        mealsList.add(randomMeal) // Додаємо її в mealsList
-                    }
-                }
-            } catch (e: Exception) {
-                // Обробка помилок, якщо запит не вдався
-            }
-        }
-    }
-
-    // Функція для отримання всіх страв - 30 рандомних
-    private fun fetchAllMeals() {
+    // Функція для отримання 30 випадкових страв
+    fun fetchRandomMeals() {
         viewModelScope.launch {
-            // Створюємо список корутин для кожної літери
-            val deferredMeals = ('a'..'z').map { letter ->
-                async { fetchMealsByLetter(letter.toString()) } // Викликаємо fetchMealsByLetter паралельно
+            val deferredMeals = (1..30).map { // Створюємо список корутин для 30 запитів
+                async { fetchRandomMeal() }
             }
-
             // Чекаємо завершення всіх запитів
-            deferredMeals.awaitAll()
-
-            // Перемішуємо список страв кілька разів
-            repeat(5) { mealsList.shuffle() }
+            val meals = deferredMeals.awaitAll()
+            Log.d("MealViewModel", "Meals fetched: ${meals.size}")
+            // Додаємо отримані страви до списку
+            mealsList.addAll(meals.filterNotNull())
+            Log.d("MealViewModel", "Meals fetched: ${mealsList.size}")
         }
     }
 
+    // Функція для отримання випадкової страви
+    private suspend fun fetchRandomMeal(): Meal? {
+        return try {
+            // Отримання відповіді від API в фоновому потоці
+            withContext(Dispatchers.IO) {
+                val response: MealResponse = RetrofitInstance.api.getRandomMeal()
+                response.meals?.firstOrNull() // Повертаємо першу страву, якщо вона є
+            }
+        } catch (e: Exception) {
+            Log.e("fetchRandomMeal", "Error fetching random meal", e)
+            null
+        }
+    }
+    // Функція для отримання страв за першою літерою
+//    private fun fetchMealsByLetter(letter: String) {
+//        viewModelScope.launch { // Запускаємо нову корутину в контексті ViewModel
+//            try {
+//                // Отримання відповіді від API в фоновому потоці
+//                val response: MealResponse = withContext(Dispatchers.IO) {
+//                    RetrofitInstance.api.searchMealsByLetter(letter).await()
+//                }
+//
+//                // Додаємо всі страви за цією літерою
+//                response.meals?.let { meals ->
+//                    if (meals.isNotEmpty()) {
+//                        mealsList.add(meals)
+//                    }
+//                }
+//            } catch (e: Exception) {
+//                // Обробка помилок, якщо запит не вдався
+//            }
+//        }
+//    }
 }
