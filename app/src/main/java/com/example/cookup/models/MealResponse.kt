@@ -6,6 +6,10 @@ data class MealResponse(
     val meals: List<Meal>? = null
 )
 
+// Варто додати новий data class UIMeal зі списками strIngredients та strMeasures
+// Перетворювати Meal в UIMeal відразу після отримання даних і використовувати UIMeal для виведення даних
+// Це все треба щоб не вкористовувати рефлексію mealData.javaClass.getDeclaredField("strIngredient$i")
+
 // Модель, що представляє окрему страву
 data class Meal(
     val idMeal:String,
