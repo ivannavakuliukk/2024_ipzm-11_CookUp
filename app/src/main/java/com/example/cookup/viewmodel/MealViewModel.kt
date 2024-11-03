@@ -1,6 +1,7 @@
 package com.example.cookup.viewmodel
 
 import android.util.Log
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -47,6 +48,7 @@ class MealViewModel : ViewModel() {
             null
         }
     }
+
     // Функція для отримання страв за першою літерою
 //    private fun fetchMealsByLetter(letter: String) {
 //        viewModelScope.launch { // Запускаємо нову корутину в контексті ViewModel

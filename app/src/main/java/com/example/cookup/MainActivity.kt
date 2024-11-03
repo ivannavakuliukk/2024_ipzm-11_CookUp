@@ -18,6 +18,8 @@ import com.google.firebase.auth.FirebaseAuth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.ui.Alignment
 import androidx.navigation.NavHostController
 import com.example.cookup.ui.elements.MealDetailScreen
@@ -39,7 +41,8 @@ class MainActivity : ComponentActivity() {
 
         // Налаштування вмісту екрана
         setContent {
-            val navController = rememberNavController() // Створюємо NavController для управління навігацією
+            val navController =
+                rememberNavController() // Створюємо NavController для управління навігацією
             NavigationGraph(navController, currentUser?.displayName) // Викликаємо функцію навігації
         }
     }
@@ -52,15 +55,18 @@ fun NavigationGraph(navController: NavHostController, userName: String?) {
     NavHost(navController = navController, startDestination = "mealList") {
         // Головний екран зі списком страв
         composable("mealList") {
-            MealApp(navController, userName) // Передаємо контролер навігації та ім'я користувача
+            // Передаємо контролер навігації та ім'я користувача
+            MealApp(navController, userName)
         }
         // Екран з деталями страви, який приймає idMeal як аргумент
         composable("mealDetail/{idMeal}") { backStackEntry ->
-            val idMeal = backStackEntry.arguments?.getString("idMeal") ?: return@composable // Отримуємо idMeal з аргументів
+            val idMeal = backStackEntry.arguments?.getString("idMeal")
+                ?: return@composable // Отримуємо idMeal з аргументів
             MealDetailScreen(idMeal) // Викликаємо екран деталізації страви
         }
     }
 }
+
 // Компонент для відображення екрану - головна сторінка з рекомендованими рецептами
 @Composable
 fun MealApp(navController: NavHostController, displayName: String?) {
@@ -88,6 +94,17 @@ fun MealApp(navController: NavHostController, displayName: String?) {
     } else {
         // Якщо страви завантажені, показуємо UI
         Column(modifier = Modifier.padding(8.dp)) {
+            val lazyListState = rememberLazyGridState()
+
+            LaunchedEffect(lazyListState) {
+                snapshotFlow { lazyListState.firstVisibleItemIndex + lazyListState.layoutInfo.visibleItemsInfo.size >= lazyListState.layoutInfo.totalItemsCount }
+                    .collect { isAtEnd ->
+                        if (isAtEnd) {
+                            mealViewModel.fetchRandomMeals()
+                        }
+                    }
+            }
+
             Text(
                 text = "Recommended Recipes",
                 style = MaterialTheme.typography.bodyLarge,
@@ -97,7 +114,8 @@ fun MealApp(navController: NavHostController, displayName: String?) {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 modifier = Modifier.padding(8.dp),
-                contentPadding = PaddingValues(4.dp)
+                contentPadding = PaddingValues(4.dp),
+                state = lazyListState
             ) {
                 items(meals) { meal -> // Проходимо по списку страв
                     MealCard(meal) { idMeal ->
