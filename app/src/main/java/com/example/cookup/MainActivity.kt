@@ -1,30 +1,27 @@
 package com.example.cookup
 
-import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.cookup.viewmodel.MealViewModel
 import com.google.firebase.auth.FirebaseAuth
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavHostController
 import com.example.cookup.ui.elements.MealDetailScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.cookup.ui.elements.MealCard
+import com.example.cookup.ui.elements.CategoriesScreen
+import com.example.cookup.ui.elements.FavoritesScreen
+import com.example.cookup.ui.elements.HomeScreen
+import com.example.cookup.ui.elements.ProfileScreen
+
 
 // Головна активність додатку
 class MainActivity : ComponentActivity() {
@@ -39,21 +36,35 @@ class MainActivity : ComponentActivity() {
 
         // Налаштування вмісту екрана
         setContent {
-            val navController = rememberNavController() // Створюємо NavController для управління навігацією
-            NavigationGraph(navController, currentUser?.displayName) // Викликаємо функцію навігації
+            val navController = rememberNavController()
+            Scaffold(
+                bottomBar = { BottomNavigationBar(navController) }
+            ) {paddingValues ->
+                Column {
+                    MyTopAppBar(userName = currentUser?.displayName) // Додаємо TopAppBar
+                    NavigationGraph(
+                        navController = navController,
+                        userName = currentUser?.displayName,
+                        paddingValues = paddingValues
+                    )
+                }
+            }
         }
     }
 }
 
 // Функція навігації
 @Composable
-fun NavigationGraph(navController: NavHostController, userName: String?) {
+fun NavigationGraph(navController: NavHostController, userName: String?, paddingValues: PaddingValues) {
     // Визначаємо основні маршрути навігації
-    NavHost(navController = navController, startDestination = "mealList") {
-        // Головний екран зі списком страв
-        composable("mealList") {
-            MealApp(navController, userName) // Передаємо контролер навігації та ім'я користувача
+    NavHost(navController = navController, startDestination = "home", modifier = Modifier.padding(paddingValues)) {
+        // Головний екран зі списком страв - початкова точка
+        composable("home") {
+            HomeScreen(navController, userName)
         }
+        composable("categories") { CategoriesScreen() }
+        composable("favorites") { FavoritesScreen() }
+        composable("profile") { ProfileScreen() }
         // Екран з деталями страви, який приймає idMeal як аргумент
         composable("mealDetail/{idMeal}") { backStackEntry ->
             val idMeal = backStackEntry.arguments?.getString("idMeal") ?: return@composable // Отримуємо idMeal з аргументів
@@ -61,53 +72,81 @@ fun NavigationGraph(navController: NavHostController, userName: String?) {
         }
     }
 }
-// Компонент для відображення екрану - головна сторінка з рекомендованими рецептами
+
+// Клас для зберігання даних про пункт навігації
+data class BottomNavItem(
+    val route: String,// маршрут для навігації
+    val icon: Int // ресурс іконки
+)
+
+// Визначення пунктів навігації
+val bottomNavItems = listOf(
+    BottomNavItem(route = "home", icon = R.drawable.home),
+    BottomNavItem(route = "categories", icon = R.drawable.category),
+    BottomNavItem(route = "favorites", icon = R.drawable.heart),
+    BottomNavItem(route = "profile", icon = R.drawable.user)
+)
+
+// Компонент для нижньої панелі навігації
 @Composable
-fun MealApp(navController: NavHostController, displayName: String?) {
-    val mealViewModel: MealViewModel = viewModel() // Отримуємо ViewModel для роботи з даними страв
-    // викликаємо метод для вибору 30 рандомних страв
-    val meals = mealViewModel.mealsList
-    val context = LocalContext.current // Отримуємо контекст для показу Toast
-    // Показуємо Toast з привітанням, коли користувач входить в систему
-    LaunchedEffect(displayName) {
-        Toast.makeText(context, "Вітаємо, ${displayName ?: "Гість"}!", Toast.LENGTH_SHORT).show()
-    }
-    // Показуємо індикатор завантаження, поки список порожній
-    if (meals.isEmpty()) {
-        // Запускаємо завантаження даних один раз, якщо список порожній
-        LaunchedEffect(Unit) {
-            mealViewModel.fetchRandomMeals()
-        }
-        // Індикатор завантаження
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            CircularProgressIndicator()
-        }
-    } else {
-        // Якщо страви завантажені, показуємо UI
-        Column(modifier = Modifier.padding(8.dp)) {
-            Text(
-                text = "Recommended Recipes",
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(8.dp)
-            )
-            // Створюємо сітку для відображення страв
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                modifier = Modifier.padding(8.dp),
-                contentPadding = PaddingValues(4.dp)
-            ) {
-                items(meals) { meal -> // Проходимо по списку страв
-                    MealCard(meal) { idMeal ->
-                        // Навігація до MealDetailScreen
-                        navController.navigate("mealDetail/$idMeal")
-                    } // Відображаємо картку з інформацією про страву
+fun BottomNavigationBar(navController: NavHostController) {
+    val items = bottomNavItems // отримуємо список пунктів навігації
+
+    NavigationBar(modifier = Modifier.height(50.dp), containerColor = Color(0xFFD0BCFF)) {
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentRoute = navBackStackEntry?.destination?.route
+
+        items.forEach { item -> // Проходимо через всі пункти навігації
+            NavigationBarItem(
+                icon = {
+                    Icon(
+                        painterResource(id = item.icon),
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp)
+                    )
+                },
+                label = null,
+                selected = currentRoute == item.route, // Визначаємо, чи пункт вибраний
+                onClick = {
+                    navController.navigate(item.route) { // Навігація до вибраного маршруту
+                        popUpTo(navController.graph.startDestinationId) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                    }
                 }
-            }
+            )
         }
     }
 }
 
-
+// Компонент для TopAppBar
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MyTopAppBar(userName: String?) {
+    TopAppBar(
+        title = {
+            Column {
+                Text(
+                    text = "Hi ${userName ?: "User"}",
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Text(
+                    text = "What do you want to cook?",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+        },
+        actions = {
+            IconButton(onClick = { /* Тут буде логіка для відкриття поля вводу */ }) {
+                Icon(
+                    painter = painterResource(id = R.drawable.search),
+                    contentDescription = "Search"
+                )
+            }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color(0xFFD0BCFF)
+        )
+    )
+}
