@@ -1,5 +1,8 @@
 package com.example.cookup.network
 
+import com.example.cookup.models.AreaResponse
+import com.example.cookup.models.CategoryResponse
+import com.example.cookup.models.Meal
 import com.example.cookup.models.MealResponse
 import retrofit2.Call
 import retrofit2.http.GET
@@ -16,4 +19,17 @@ interface MealApiService {
     // Метод для отримання випадкової страви
     @GET("random.php")
     suspend fun getRandomMeal(): MealResponse
+    // Метод для отримання категорій
+    @GET("categories.php")
+    suspend fun getCategories(): CategoryResponse
+    // Метод для отримання областей
+    @GET("list.php?a=list")
+    suspend fun getAreas(): AreaResponse
+    // Метод для отримання страв за категорією
+    @GET("filter.php")
+    suspend fun getMealsByCategory(@Query("c") category: String): MealResponse
+    @GET("filter.php")
+    suspend fun getMealsByArea(@Query("a") category: String): MealResponse
+    @GET("search.php")
+    suspend fun searchMeals(@Query("s") query: String): MealResponse
 }

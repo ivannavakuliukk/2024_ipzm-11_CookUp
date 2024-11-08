@@ -1,6 +1,8 @@
 package com.example.cookup.ui.elements
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,9 +28,13 @@ fun MealCard(meal: Meal, onClick: (String) -> Unit) {
         modifier = Modifier
             .padding(3.dp)
             .fillMaxWidth()
-            .height(230.dp)
+            .height(196.dp)
+            .border(BorderStroke(1.dp, MaterialTheme.colorScheme.secondary))
             .clickable { onClick(meal.idMeal) },
-        elevation = CardDefaults.elevatedCardElevation(8.dp)
+        elevation = CardDefaults.elevatedCardElevation(4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primary
+        )
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -44,18 +50,18 @@ fun MealCard(meal: Meal, onClick: (String) -> Unit) {
             )
             Text(
                 text = meal.strMeal,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodySmall,
                 maxLines = 2,
-                overflow = TextOverflow.Ellipsis // Додаємо три крапки, якщо текст не поміщається
+                overflow = TextOverflow.Ellipsis
             )
-            Text(
-                text = "Category: ${meal.strCategory}",
-                style = MaterialTheme.typography.bodySmall
-            )
-            Text(
-                text = "Region: ${meal.strArea}",
-                style = MaterialTheme.typography.bodySmall
-            )
+//            Text(
+//                text = "Category: ${meal.strCategory}",
+//                style = MaterialTheme.typography.bodySmall
+//            )
+//            Text(
+//                text = "Region: ${meal.strArea}",
+//                style = MaterialTheme.typography.bodySmall
+//            )
         }
     }
 }

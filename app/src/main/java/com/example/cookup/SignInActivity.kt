@@ -8,7 +8,13 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
@@ -55,7 +61,6 @@ class SignInActivity : ComponentActivity() {
 
         // Ініціалізація Google Sign-In клієнта
         googleSignInClient = GoogleSignIn.getClient(this, gso)
-
         // Встановлюємо контент для SignInActivity
         setContent {
             SignInScreen() // Відображаємо екран входу
@@ -152,4 +157,3 @@ class SignInActivity : ComponentActivity() {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
 }
-

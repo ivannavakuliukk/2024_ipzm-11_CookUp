@@ -15,45 +15,77 @@ import com.example.cookup.viewmodel.MealDetailViewModel
 import coil.compose.rememberImagePainter
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.painterResource
+import androidx.navigation.NavHostController
+import com.example.cookup.R
 
 // Компонент для відображення детального екрану рецепту
 @Composable
-fun MealDetailScreen(idMeal: String, viewModel: MealDetailViewModel = viewModel()) {
+fun MealDetailScreen(idMeal: String, navController: NavHostController) {
+    val viewModel: MealDetailViewModel = viewModel()
     val mealDetail by viewModel.mealDetail
-
     // Завантажити деталі страви за ідентифікатором, коли цей Composable створено вперше
     LaunchedEffect(idMeal) {
         viewModel.fetchMealById(idMeal)
     }
 
     // Якщо страва завантажена, відобразити її
-    mealDetail?.let { displayMealDetails(it) }
+    mealDetail?.let { displayMealDetails(it, navController) }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun displayMealDetails(meal: Meal) {
-    Column(modifier = Modifier
-        .padding(16.dp)
-        .verticalScroll(rememberScrollState())) {
-    Text(text = meal.strMeal, style = MaterialTheme.typography.headlineMedium)
-        Spacer(modifier = Modifier.height(8.dp))
+fun displayMealDetails(meal: Meal, navController: NavHostController) {
+    Column(
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start,
+        ) {
+            IconButton(onClick = { navController.popBackStack() }) {
+                Icon(
+                    painter = painterResource(id = R.drawable.arrow_back),
+                    contentDescription = "Back",
+                    tint = MaterialTheme.colorScheme.tertiary,
+                    modifier = Modifier.size(26.dp).padding(0.dp).padding(start = 0.dp)
+                )
+            }
+            Text(
+                text = meal.strMeal, // Назва страви
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.tertiary,
+                modifier = Modifier.padding(start = 8.dp)
+            )
+        }
         Image(
             painter = rememberImagePainter(meal.strMealThumb),
             contentDescription = meal.strMeal,
             modifier = Modifier.size(200.dp)
         )
         Spacer(modifier = Modifier.height(8.dp))
-        Text(text = "Category: ${meal.strCategory}", style = MaterialTheme.typography.bodyMedium)
+        Text(
+            text = "Category: ${meal.strCategory}",
+            style = MaterialTheme.typography.bodyMedium
+        )
         Text(text = "Region: ${meal.strArea}", style = MaterialTheme.typography.bodyMedium)
         Spacer(modifier = Modifier.height(8.dp))
         Text(text = "Ingredients:", style = MaterialTheme.typography.bodyMedium)
         // Відображення інгредієнтів і їх кількості
         meal.ingredients.zip(meal.measures).forEach { (ingredient, measure) ->
             if (ingredient.isNotEmpty() && measure.isNotEmpty()) {
-                Text(text = "$ingredient - $measure")
+                Text(
+                    text = "$ingredient - $measure",
+                    style = MaterialTheme.typography.bodySmall
+                )
             }
         }
         Spacer(modifier = Modifier.height(8.dp))
-        Text(text = "Instructions:\n${meal.strInstructions}", style = MaterialTheme.typography.bodyMedium)
+        Text(text = "Instructions:", style = MaterialTheme.typography.bodyMedium)
+        Text(text = "${meal.strInstructions}", style = MaterialTheme.typography.bodySmall)
+
     }
 }

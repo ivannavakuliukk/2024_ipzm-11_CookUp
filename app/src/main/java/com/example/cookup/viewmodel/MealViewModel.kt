@@ -18,6 +18,9 @@ class MealViewModel : ViewModel() {
     // Список страв, який буде спостерігатися у Compose UI
     var mealsList = mutableStateListOf<Meal>()
         private set
+    init {
+        fetchRandomMeals()
+    }
 
     // Функція для отримання 30 випадкових страв
     fun fetchRandomMeals() {

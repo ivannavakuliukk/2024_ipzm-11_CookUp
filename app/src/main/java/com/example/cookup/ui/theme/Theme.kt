@@ -1,26 +1,25 @@
 package com.example.cookup.ui.theme
 
-import android.app.Activity
-import android.os.Build
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
+import com.example.cookup.R
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
-)
+
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
+    primary = Color.White,
+    secondary = Pink,
+    tertiary = Red,
+    onPrimary = Color.Black
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
@@ -33,26 +32,58 @@ private val LightColorScheme = lightColorScheme(
     */
 )
 
+val Poppins = FontFamily(
+    Font(R.font.poppins_regular)
+)
+val CustomTypography = Typography(
+    bodyLarge = TextStyle(
+        fontFamily = Poppins,
+        fontSize = 18.sp,
+        fontWeight = FontWeight.Normal,
+        letterSpacing = 0.5.sp
+    ),
+    bodyMedium = TextStyle(
+        fontFamily = Poppins,
+        fontSize = 15.sp,
+        fontWeight = FontWeight.Normal,
+        letterSpacing = 0.5.sp
+    ),
+    bodySmall = TextStyle(
+        fontFamily = Poppins,
+        fontSize = 13.sp,
+        fontWeight = FontWeight.Normal,
+        letterSpacing = 0.5.sp
+    ),
+    labelLarge =  TextStyle(
+        fontFamily = Poppins,
+        fontSize = 30.sp,
+        fontWeight = FontWeight.Bold,
+        letterSpacing = 0.15.sp
+    ),
+    labelMedium = TextStyle(
+        fontFamily = Poppins,
+        fontSize = 24.sp,
+        fontWeight = FontWeight.Bold,
+        letterSpacing = 0.15.sp
+    ),
+    labelSmall = TextStyle(
+        fontFamily = Poppins,
+        fontSize = 20.sp,
+        fontWeight = FontWeight.Bold,
+        letterSpacing = 0.15.sp
+    )
+)
+
 @Composable
 fun CookUpTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
+    // Використовуємо лише світлу кольорову схему
+    val colorScheme = LightColorScheme
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = CustomTypography,
         content = content
     )
 }
