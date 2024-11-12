@@ -10,14 +10,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.cookup.models.Meal
+import com.example.cookup.data.models.Meal
 import com.example.cookup.viewmodel.MealDetailViewModel
-import coil.compose.rememberImagePainter
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavHostController
+import coil.compose.rememberAsyncImagePainter
 import com.example.cookup.R
 
 // Компонент для відображення детального екрану рецепту
@@ -31,12 +31,11 @@ fun MealDetailScreen(idMeal: String, navController: NavHostController) {
     }
 
     // Якщо страва завантажена, відобразити її
-    mealDetail?.let { displayMealDetails(it, navController) }
+    mealDetail?.let { DisplayMealDetails(it, navController) }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun displayMealDetails(meal: Meal, navController: NavHostController) {
+fun DisplayMealDetails(meal: Meal, navController: NavHostController) {
     Column(
         modifier = Modifier
             .padding(horizontal = 16.dp)
@@ -62,7 +61,7 @@ fun displayMealDetails(meal: Meal, navController: NavHostController) {
             )
         }
         Image(
-            painter = rememberImagePainter(meal.strMealThumb),
+            painter = rememberAsyncImagePainter(meal.strMealThumb),
             contentDescription = meal.strMeal,
             modifier = Modifier.size(200.dp)
         )
@@ -85,7 +84,7 @@ fun displayMealDetails(meal: Meal, navController: NavHostController) {
         }
         Spacer(modifier = Modifier.height(8.dp))
         Text(text = "Instructions:", style = MaterialTheme.typography.bodyMedium)
-        Text(text = "${meal.strInstructions}", style = MaterialTheme.typography.bodySmall)
+        Text(text = meal.strInstructions, style = MaterialTheme.typography.bodySmall)
 
     }
 }

@@ -1,43 +1,34 @@
 package com.example.cookup.viewmodel
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.cookup.models.Meal
-import com.example.cookup.network.RetrofitInstance
-import kotlinx.coroutines.Dispatchers
+import com.example.cookup.data.models.Meal
+import com.example.cookup.data.repository.MealRepository
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
+// ViewModel для завантаження страв за пошуковим запитом
 class MealSearchViewModel : ViewModel() {
-    var isLoading by mutableStateOf(false)// Стан завантаження
+    private val mealRepository = MealRepository()
+
+    // Стан завантаження
+    var isLoading by mutableStateOf(false)
         private set
     var mealsList = mutableStateListOf<Meal>()
         private set
 
-    // Функція для отримання страв за пошуковим запитом
+    // Функція для пошуку страв за запитом
     fun searchMeals(query: String) {
-        if (query.length < 3) return
+        if (query.length < 3) return // Перевірка мінімальної довжини запиту
         isLoading = true
         viewModelScope.launch {
-            try {
-                val response = withContext(Dispatchers.IO) {
-                    RetrofitInstance.api.searchMeals(query)
-                }
-                val fetchedMeals = response.meals
-                mealsList.clear()
-                if (fetchedMeals != null) {
-                    mealsList.addAll(fetchedMeals)
-                }
-            } catch (e: Exception) {
-                Log.e("searchMeals", "Error searching meals", e)
-            }finally {
-                isLoading = false
-            }
+            val fetchedMeals = mealRepository.searchMeals(query)
+            mealsList.clear()
+            mealsList.addAll(fetchedMeals)
+            isLoading = false
         }
     }
 }

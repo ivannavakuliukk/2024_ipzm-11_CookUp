@@ -1,4 +1,4 @@
-package com.example.cookup.models
+package com.example.cookup.data.models
 
 // Модель відповіді для отримання даних про страви з API
 data class MealResponse(

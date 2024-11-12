@@ -1,4 +1,4 @@
-package com.example.cookup.network
+package com.example.cookup.data.datasource
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

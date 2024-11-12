@@ -18,8 +18,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberImagePainter
-import com.example.cookup.models.Meal
+import coil.compose.rememberAsyncImagePainter
+import com.example.cookup.data.models.Meal
 
 // Компонент для відображення картки страви
 @Composable
@@ -42,7 +42,7 @@ fun MealCard(meal: Meal, onClick: (String) -> Unit) {
         ) {
             // Завантажуємо зображення страви
             Image(
-                painter = rememberImagePainter(meal.strMealThumb),
+                painter = rememberAsyncImagePainter(meal.strMealThumb),
                 contentDescription = meal.strMeal,
                 modifier = Modifier
                     .size(128.dp)
@@ -54,14 +54,6 @@ fun MealCard(meal: Meal, onClick: (String) -> Unit) {
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
-//            Text(
-//                text = "Category: ${meal.strCategory}",
-//                style = MaterialTheme.typography.bodySmall
-//            )
-//            Text(
-//                text = "Region: ${meal.strArea}",
-//                style = MaterialTheme.typography.bodySmall
-//            )
         }
     }
 }

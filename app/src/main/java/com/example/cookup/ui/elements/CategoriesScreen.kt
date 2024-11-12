@@ -29,12 +29,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberImagePainter
-import com.example.cookup.models.Category
-import com.example.cookup.models.Area
+import com.example.cookup.data.models.Category
+import com.example.cookup.data.models.Area
 import com.example.cookup.viewmodel.CategoriesViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import coil.compose.rememberAsyncImagePainter
 
 // Екран з відображенням категорій і областей
 @Composable
@@ -112,7 +112,7 @@ fun CategoryCard(category: Category, onClick: (String) -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
-                painter = rememberImagePainter(category.strCategoryThumb),
+                painter = rememberAsyncImagePainter(category.strCategoryThumb),
                 contentDescription = category.strCategory,
                 modifier = Modifier.size(120.dp)
             )
@@ -130,7 +130,7 @@ fun CategoryCard(category: Category, onClick: (String) -> Unit) {
 
 // Компонент для картки областей
 @Composable
-fun AreaCard(area: Area,  onClick: (String) -> Unit) {
+fun AreaCard(area: Area, onClick: (String) -> Unit) {
     Card(
         modifier = Modifier
             .padding(vertical = 4.dp, horizontal = 8.dp)
