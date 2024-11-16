@@ -55,30 +55,7 @@ fun SearchedMealsScreen(query: String, navController: NavHostController) {
                 )
             }
             else -> {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    modifier = Modifier
-                        .padding(8.dp),
-                    contentPadding = PaddingValues(8.dp)
-                ) {
-                    item(span = { GridItemSpan(2) }) {
-                        Row(
-                            modifier = Modifier.padding(0.dp).heightIn(max = 30.dp)
-                        ) {
-                            Text(
-                                text = "Found by query: $query",
-                                style = MaterialTheme.typography.bodyMedium,
-                                modifier = Modifier.padding(start = 8.dp),
-                                color = MaterialTheme.colorScheme.tertiary
-                            )
-                        }
-                    }
-                    items(meals) { meal ->
-                        MealCard(meal) { idMeal ->
-                            navController.navigate("mealDetail/$idMeal")
-                        }
-                    }
-                }
+                MealGrid(meals, navController, "Meals found by query: $query", iconOn = false)
             }
         }
     }

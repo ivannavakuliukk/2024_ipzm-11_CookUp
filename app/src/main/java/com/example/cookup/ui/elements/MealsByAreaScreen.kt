@@ -29,50 +29,16 @@ import com.example.cookup.viewmodel.AreaMealsViewModel
 @Composable
 fun MealsByAreaScreen(area: String, navController: NavHostController) {
     val viewModel: AreaMealsViewModel = viewModel()
-
     // Завантажуємо страви за категорією
     LaunchedEffect(area) {
         viewModel.loadMealsByArea(area)
     }
-
     val meals = viewModel.mealsList
-
-
     if (meals.isEmpty()) {
         Box(contentAlignment = Alignment.Center,) {
             CircularProgressIndicator()
         }
     } else {
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            modifier = Modifier
-                .padding(8.dp),
-            contentPadding = PaddingValues(8.dp)
-        ) {
-            item(span = { GridItemSpan(2) }) {
-                Row(modifier = Modifier.padding(0.dp).heightIn(max = 30.dp)
-                ){
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.arrow_back),
-                            contentDescription = "Back",
-                            tint = MaterialTheme.colorScheme.tertiary,
-                            modifier = Modifier.size(28.dp).padding(0.dp).padding(bottom = 3.dp)
-                        )
-                    }
-                    Text(
-                        text = area,
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.padding(start = 8.dp),
-                        color = MaterialTheme.colorScheme.tertiary
-                    )
-                }
-            }
-            items(meals) { meal ->
-                MealCard(meal) { idMeal ->
-                    navController.navigate("mealDetail/$idMeal")
-                }
-            }
-        }
+        MealGrid(meals, navController, area, iconOn = true)
     }
 }

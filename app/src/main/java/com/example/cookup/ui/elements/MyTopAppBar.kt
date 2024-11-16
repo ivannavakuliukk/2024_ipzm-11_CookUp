@@ -67,12 +67,12 @@ fun MyTopAppBar(userName: String?, navController: NavHostController,) {
                     ) {
                         Text(
                             text = "Hi ${userName ?: "User"}",
-                            style = MaterialTheme.typography.bodyLarge,
+                            style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.tertiary
                         )
                         Text(
                             text = "What do you want to cook?",
-                            style = MaterialTheme.typography.bodyMedium,
+                            style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.tertiary
                         )
                     }
@@ -159,7 +159,7 @@ fun MyTopAppBar(userName: String?, navController: NavHostController,) {
                 modifier = Modifier
                     .padding(top = 15.dp, bottom = 5.dp)
                     .align(Alignment.CenterHorizontally)
-                    .height(35.dp)
+                    .height(40.dp)
                     .fillMaxWidth(0.4f),
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary)
             ) {

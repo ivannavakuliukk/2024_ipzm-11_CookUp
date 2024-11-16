@@ -67,7 +67,7 @@ fun NavigationGraph(navController: NavHostController, paddingValues: PaddingValu
             HomeScreen(navController)
         }
         composable("categories") { CategoriesScreen(navController) }
-        composable("favorites") { FavoritesScreen() }
+        composable("favorites") { FavoritesScreen(navController) }
         composable("profile") { ProfileScreen() }
         // Екран з деталями страви, який приймає idMeal як аргумент
         composable("mealDetail/{idMeal}") { backStackEntry ->

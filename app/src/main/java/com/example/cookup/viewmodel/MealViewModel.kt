@@ -23,7 +23,7 @@ class MealViewModel : ViewModel() {
     }
 
     // Функція для отримання 30 випадкових страв
-    private fun fetchRandomMeals() {
+    fun fetchRandomMeals() {
         viewModelScope.launch {
             val deferredMeals = (1..30).map {
                 async { mealRepository.fetchRandomMeal() }
@@ -35,3 +35,4 @@ class MealViewModel : ViewModel() {
         }
     }
 }
+

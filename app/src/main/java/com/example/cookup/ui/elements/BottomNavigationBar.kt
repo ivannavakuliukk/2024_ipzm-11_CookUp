@@ -26,7 +26,7 @@ data class BottomNavItem(
 val bottomNavItems = listOf(
     BottomNavItem(route = "home", icon = R.drawable.home),
     BottomNavItem(route = "categories", icon = R.drawable.category),
-    BottomNavItem(route = "favorites", icon = R.drawable.heart),
+    BottomNavItem(route = "favorites", icon = R.drawable.heart_navigation),
     BottomNavItem(route = "profile", icon = R.drawable.user)
 )
 
