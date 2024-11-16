@@ -1,8 +1,9 @@
 {
   "project_info": {
     "project_number": "299639378169",
+    "firebase_url": "https://cookup-421a1-default-rtdb.firebaseio.com",
     "project_id": "cookup-421a1",
-    "storage_bucket": "cookup-421a1.appspot.com"
+    "storage_bucket": "cookup-421a1.firebasestorage.app"
   },
   "client": [
     {
@@ -14,11 +15,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "299639378169-0t98kk140739ni11g1ncen2gj9dkm8ov.apps.googleusercontent.com",
+          "client_id": "299639378169-75i44gr947k30ev6lvj6959ncoib8jc8.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.example.cookup",
-            "certificate_hash": "3bbb6bdba2228c10f04b60368c738f8173474414"
+            "certificate_hash": "cf94f53a6f175cf68d5daad3e3549f140e00c86a"
           }
         },
         {

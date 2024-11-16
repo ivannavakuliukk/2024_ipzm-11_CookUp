@@ -5,6 +5,14 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        getByName("debug") {
+            storeFile = file("release.jks")
+            storePassword = "mira1978"
+            keyAlias = "key0"
+            keyPassword = "mira1978"
+        }
+    }
     namespace = "com.example.cookup"
     compileSdk = 34
 
@@ -28,6 +36,10 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("debug")
+        }
+        debug {
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
