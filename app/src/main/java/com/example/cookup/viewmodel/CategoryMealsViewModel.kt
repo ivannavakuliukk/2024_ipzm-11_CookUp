@@ -18,6 +18,7 @@ class CategoryMealsViewModel : ViewModel() {
     fun loadMealsByCategory(category: String) {
         viewModelScope.launch {
             val fetchedMeals = mealRepository.fetchMealsByCategory(category)
+            mealRepository.syncWithFavorites(fetchedMeals)
             mealsList.clear()
             mealsList.addAll(fetchedMeals)
         }

@@ -12,11 +12,15 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.example.cookup.viewmodel.CategoryMealsViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.cookup.viewmodel.FavoritesViewModel
 
 @Composable
-fun MealsByCategoryScreen(category: String, navController: NavHostController) {
+fun MealsByCategoryScreen(
+    category: String,
+    navController: NavHostController,
+    favoritesViewModel: FavoritesViewModel
+) {
     val viewModel: CategoryMealsViewModel = viewModel()
-
     // Завантажуємо страви за категорією
     LaunchedEffect(category) {
         viewModel.loadMealsByCategory(category)
@@ -28,7 +32,7 @@ fun MealsByCategoryScreen(category: String, navController: NavHostController) {
             CircularProgressIndicator(color = MaterialTheme.colorScheme.secondary)
         }
     } else {
-        MealGrid(meals, navController, category, iconOn = true)
+        MealGrid(meals, navController, category, iconOn = true, favoritesViewModel)
     }
 }
 

@@ -19,6 +19,7 @@ class AreaMealsViewModel : ViewModel() {
     fun loadMealsByArea(area: String) {
         viewModelScope.launch {
             val fetchedMeals = mealRepository.fetchMealsByArea(area)
+            mealRepository.syncWithFavorites(fetchedMeals)
             mealsList.clear()
             mealsList.addAll(fetchedMeals)
         }

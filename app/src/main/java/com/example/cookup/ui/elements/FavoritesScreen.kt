@@ -21,11 +21,8 @@ import androidx.navigation.NavHostController
 import com.example.cookup.viewmodel.FavoritesViewModel
 
 @Composable
-fun FavoritesScreen(navController: NavHostController) {
-    val favoritesViewModel: FavoritesViewModel = viewModel()
+fun FavoritesScreen(navController: NavHostController, favoritesViewModel: FavoritesViewModel) {
     val meals = favoritesViewModel.mealsList
-    val favoriteMealsState = favoritesViewModel.favoriteIds
-
     // Стани - завантаження та пустий список
     val isLoading = favoritesViewModel.isLoading
     val isEmpty = meals.isEmpty() && !isLoading
@@ -58,11 +55,10 @@ fun FavoritesScreen(navController: NavHostController) {
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(meals) { meal -> // Проходимо по списку страв
-                        val isFavorite =
-                            rememberUpdatedState(favoriteMealsState.contains(meal.idMeal))
+                        val isFavorite = rememberUpdatedState(meal.isFavorite)
                         MealFavoriteCard(
                             meal = meal,
-                            isFavorite = isFavorite.value,
+                            isFavorite = isFavorite,
                             onFavoriteClick = {
                                 if (isFavorite.value) {
                                     favoritesViewModel.removeRecipeFromFavorites(meal.idMeal)

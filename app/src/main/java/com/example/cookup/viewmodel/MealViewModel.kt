@@ -1,37 +1,41 @@
 package com.example.cookup.viewmodel
 
-import android.util.Log
-import androidx.compose.runtime.mutableStateListOf
+
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cookup.data.models.Meal
 import com.example.cookup.data.repository.MealRepository
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 
 // ViewModel для завантаження рекомендованих страв
 class MealViewModel : ViewModel() {
     private val mealRepository = MealRepository()
-
-    // Список страв, який буде спостерігатися у Compose UI
-    var mealsList = mutableStateListOf<Meal>()
+    val mealsList: List<Meal> get() = mealRepository.recommendedMeals
+    var isLoading by mutableStateOf(false)
         private set
 
     init {
         fetchRandomMeals()
     }
 
-    // Функція для отримання 30 випадкових страв
-    fun fetchRandomMeals() {
+    // Оновлення списку випадкових страв
+    private fun fetchRandomMeals() {
+        isLoading = true
         viewModelScope.launch {
-            val deferredMeals = (1..30).map {
-                async { mealRepository.fetchRandomMeal() }
-            }
-            val meals = deferredMeals.awaitAll()
-            Log.d("MealViewModel", "Meals fetched: ${meals.size}")
-            mealsList.addAll(meals.filterNotNull())
-            Log.d("MealViewModel", "Meals fetched: ${mealsList.size}")
+            mealRepository.fetchRandomMeals()
+            syncWithFavorites()
+            isLoading = false
+        }
+    }
+
+    fun syncWithFavorites(){
+        isLoading = true
+        viewModelScope.launch {
+            mealRepository.syncWithFavorites(mealsList)
+            isLoading = false
         }
     }
 }

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.firebase.auth.FirebaseAuth
 import androidx.navigation.NavHostController
 import com.example.cookup.ui.elements.MealDetailScreen
@@ -23,6 +24,7 @@ import com.example.cookup.ui.elements.MyTopAppBar
 import com.example.cookup.ui.elements.ProfileScreen
 import com.example.cookup.ui.elements.SearchedMealsScreen
 import com.example.cookup.ui.theme.CookUpTheme
+import com.example.cookup.viewmodel.FavoritesViewModel
 
 
 // Головна активність додатку
@@ -60,31 +62,32 @@ class MainActivity : ComponentActivity() {
 // Функція навігації
 @Composable
 fun NavigationGraph(navController: NavHostController, paddingValues: PaddingValues) {
+    val favoritesViewModel: FavoritesViewModel = viewModel()
     // Визначаємо основні маршрути навігації
     NavHost(navController = navController, startDestination = "home", modifier = Modifier.padding(paddingValues)) {
         // Головний екран зі списком страв - початкова точка
         composable("home") {
-            HomeScreen(navController)
+            HomeScreen(navController, favoritesViewModel)
         }
         composable("categories") { CategoriesScreen(navController) }
-        composable("favorites") { FavoritesScreen(navController) }
+        composable("favorites") { FavoritesScreen(navController, favoritesViewModel) }
         composable("profile") { ProfileScreen() }
         // Екран з деталями страви, який приймає idMeal як аргумент
         composable("mealDetail/{idMeal}") { backStackEntry ->
             val idMeal = backStackEntry.arguments?.getString("idMeal") ?: return@composable // Отримуємо idMeal з аргументів
-            MealDetailScreen(idMeal, navController) // Викликаємо екран деталізації страви
+            MealDetailScreen(idMeal, navController, favoritesViewModel) // Викликаємо екран деталізації страви
         }
         composable("mealsByCategory/{category}") { backStackEntry ->
             val category = backStackEntry.arguments?.getString("category") ?: return@composable
-            MealsByCategoryScreen(category = category, navController)
+            MealsByCategoryScreen(category = category, navController, favoritesViewModel)
         }
         composable("mealsByArea/{area}") { backStackEntry ->
             val area = backStackEntry.arguments?.getString("area") ?: return@composable
-            MealsByAreaScreen(area = area, navController)
+            MealsByAreaScreen(area = area, navController, favoritesViewModel)
         }
         composable("searchedMeals/{query}") { backStackEntry ->
             val query = backStackEntry.arguments?.getString("query") ?: return@composable
-            SearchedMealsScreen(query = query, navController)
+            SearchedMealsScreen(query = query, navController, favoritesViewModel)
         }
     }
 }

@@ -26,6 +26,7 @@ class MealSearchViewModel : ViewModel() {
         isLoading = true
         viewModelScope.launch {
             val fetchedMeals = mealRepository.searchMeals(query)
+            mealRepository.syncWithFavorites(fetchedMeals)
             mealsList.clear()
             mealsList.addAll(fetchedMeals)
             isLoading = false

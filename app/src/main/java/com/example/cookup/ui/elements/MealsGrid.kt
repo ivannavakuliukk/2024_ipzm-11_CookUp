@@ -12,7 +12,6 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.cookup.data.models.Meal
 import com.example.cookup.viewmodel.FavoritesViewModel
@@ -21,13 +20,19 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.res.painterResource
 import com.example.cookup.R
 
 @Composable
-fun MealGrid(meals: List<Meal>, navController: NavHostController, label: String, iconOn: Boolean){
+fun MealGrid(
+    meals: List<Meal>,
+    navController: NavHostController,
+    label: String,
+    iconOn: Boolean,
+    favoritesViewModel: FavoritesViewModel
+){
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             modifier = Modifier.padding(8.dp),
@@ -58,8 +63,18 @@ fun MealGrid(meals: List<Meal>, navController: NavHostController, label: String,
                 }
             }
             items(meals) { meal -> // Проходимо по списку страв
-                MealCard(
+                val isFavorite = remember { mutableStateOf(meal.isFavorite) }
+                MealFavoriteCard(
                     meal = meal,
+                    isFavorite = isFavorite,
+                    onFavoriteClick = {
+                        if (isFavorite.value) {
+                            favoritesViewModel.removeRecipeFromFavorites(meal.idMeal)
+                        } else {
+                            favoritesViewModel.addRecipeToFavorites(meal.idMeal)
+                        }
+                        isFavorite.value = !isFavorite.value
+                    }
                 ) { idMeal ->
                     // Навігація до MealDetailScreen
                     navController.navigate("mealDetail/$idMeal")

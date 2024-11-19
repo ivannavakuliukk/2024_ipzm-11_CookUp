@@ -20,8 +20,11 @@ class MealDetailViewModel : ViewModel() {
     fun fetchMealById(idMeal: String) {
         viewModelScope.launch {
             try {
-                Log.d("MealDetailViewModel", "Fetching meal with ID: $idMeal")
+                mealRepository.getFavoriteRecipes()
                 val mealData = mealRepository.fetchMealById(idMeal)
+                if (mealData != null) {
+                    Log.d("MealDetailViewModel", "Fetching meal with ID: $idMeal, ${mealData.isFavorite}")
+                }
                 mealData?.let { data ->
                     // Створюємо списки для зручності відображення в composable
                     val ingredients = mutableListOf<String>() // Список для інгредієнтів
@@ -35,12 +38,12 @@ class MealDetailViewModel : ViewModel() {
                         if (!ingredient.isNullOrEmpty()) ingredients.add(ingredient)
                         if (!measure.isNullOrEmpty()) measures.add(measure)
                     }
-
                     // Оновлюємо mealDetail з новими значеннями
                     mealDetail.value = mealData.copy(
                         ingredients = ingredients,
-                        measures = measures
+                        measures = measures,
                     )
+
                     Log.d("MealDetailViewModel", "Ingredients: $ingredients")
                     Log.d("MealDetailViewModel", "Measures: $measures")
                 }
@@ -49,5 +52,8 @@ class MealDetailViewModel : ViewModel() {
                 mealDetail.value = null
             }
         }
+    }
+    fun isElementFavorite(idMeal: String):Boolean{
+        return mealRepository.favoriteIds.contains(idMeal)
     }
 }

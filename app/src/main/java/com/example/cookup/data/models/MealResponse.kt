@@ -1,5 +1,8 @@
 package com.example.cookup.data.models
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+
 // Модель відповіді для отримання даних про страви з API
 data class MealResponse(
     // Список страв, що містить інформацію про кожну страву
@@ -76,4 +79,6 @@ data class Meal(
     @JvmField val strMeasure19: String?,
     @JvmField val strMeasure20: String?
 
-)
+){
+    var isFavorite = false
+}

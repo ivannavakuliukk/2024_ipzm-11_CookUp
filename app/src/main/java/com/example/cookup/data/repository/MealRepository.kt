@@ -1,6 +1,7 @@
 package com.example.cookup.data.repository
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateListOf
 import com.example.cookup.data.datasource.RetrofitInstance
 import com.example.cookup.data.models.Area
 import com.example.cookup.data.models.AreaResponse
@@ -8,27 +9,46 @@ import com.example.cookup.data.models.Category
 import com.example.cookup.data.models.CategoryResponse
 import com.example.cookup.data.models.Meal
 import com.example.cookup.data.models.MealResponse
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
+import kotlinx.coroutines.tasks.await
 import retrofit2.await
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 
-// Репозиторій для роботи з Api
+// Репозиторій для роботи з Api та firebase
 class MealRepository {
+    var recommendedMeals = mutableStateListOf<Meal>()
+        private set
+    var favoriteMeals = mutableStateListOf<Meal>()
+    var favoriteIds = mutableStateListOf<String>()
+    private val database = FirebaseDatabase.getInstance()
+    private val userId = FirebaseAuth.getInstance().currentUser?.uid
 
-    // Функція для отримання випадкової страви
-    suspend fun fetchRandomMeal(): Meal? {
-        return try {
-            val response: MealResponse = RetrofitInstance.api.getRandomMeal()
-            response.meals?.firstOrNull() // Повертаємо першу страву, якщо вона є
-        } catch (e: Exception) {
-            Log.e("MealRepository", "Error fetching random meal", e)
-            null
+    // Метод для отримання випадкових страв
+    suspend fun fetchRandomMeals() {
+        val fetchedMeals = (1..30).mapNotNull {
+            try {
+                RetrofitInstance.api.getRandomMeal().meals?.firstOrNull()
+            } catch (e: Exception) {
+                Log.e("MealRepository", "Error fetching random meal", e)
+                null
+            }
         }
+        recommendedMeals.clear()
+        recommendedMeals.addAll(fetchedMeals)
     }
 
     // Функція для отримання страви за ID
     suspend fun fetchMealById(idMeal: String): Meal? {
         return try {
             val response: MealResponse = RetrofitInstance.api.getMealById(idMeal).await()
-            response.meals?.firstOrNull()
+            val meal = response.meals?.firstOrNull()
+            if (meal != null) {
+                meal.isFavorite = favoriteIds.contains(meal.idMeal)
+            }
+            meal
         } catch (e: Exception) {
             Log.e("MealRepository", "Error fetching meal by ID", e)
             null
@@ -89,4 +109,92 @@ class MealRepository {
             emptyList()
         }
     }
+
+    // Додати рецепт до обраних
+    suspend fun addRecipeToFavorites(idMeal: String) {
+        userId?.let {
+            try {
+                val meal = fetchMealById(idMeal)
+                if (meal != null) {
+                    // Додаємо в Firebase
+                    database.reference.child("favorites").child("users").child(userId).child(idMeal)
+                        .setValue(true)
+                        .addOnSuccessListener {
+                            meal.isFavorite = true
+                            favoriteMeals.add(meal)
+                            favoriteIds.add(idMeal)
+                            Log.e("MealRepository", "Recipe added: $idMeal, ${meal.isFavorite}")
+                        }
+                        .addOnFailureListener { exception ->
+                            Log.e("MealRepository", "Error adding recipe: $exception")
+                        }
+                } else {
+                    Log.e("MealRepository", "Meal not found for id: $idMeal")
+                }
+            } catch (e: Exception) {
+                Log.e("MealRepository", "Error removing recipe from favorites", e)
+            }
+        }
+    }
+
+    // Видалити рецепт з обраних
+    suspend fun removeRecipeFromFavorites(idMeal: String) {
+        userId?.let {
+            try {
+                val meal = fetchMealById(idMeal)
+                if (meal != null) {
+                    meal.isFavorite = false
+                    // Видаляємо з Firebase
+                    database.reference.child("favorites").child("users").child(userId).child(idMeal)
+                        .removeValue()
+                        .addOnSuccessListener {
+                            meal.isFavorite = false
+                            favoriteMeals.remove(meal)
+                            favoriteIds.remove(idMeal)
+                            Log.e("MealRepository", "Recipe deleted: $idMeal, ${meal.isFavorite}")
+                        }
+                        .addOnFailureListener { exception ->
+                            Log.e("MealRepository", "Error deleting recipe: $exception")
+                        }
+                } else {
+                    Log.e("MealRepository", "Meal not found for id: $idMeal")
+                }
+            } catch (e: Exception) {
+                Log.e("MealRepository", "Error removing recipe from favorites", e)
+            }
+        }
+    }
+
+    // Отримати обрані рецепти користувача
+    suspend fun getFavoriteRecipes() {
+        userId?.let { id ->
+            try {
+                val snapshot = database.reference.child("favorites").child("users").child(id).get().await()
+                favoriteIds.clear()
+                favoriteIds.addAll(snapshot.children.mapNotNull { it.key })
+                favoriteMeals.clear()
+                coroutineScope {
+                    val deferredMeals = favoriteIds.map { id ->
+                        async {
+                            fetchMealById(id)
+                        }
+                    }
+                    val favorites = deferredMeals.awaitAll().filterNotNull()
+                    favoriteMeals.addAll(favorites)
+                }
+            } catch (e: Exception) {
+                Log.e("FavoritesRepository", "Error fetching favorite recipes", e)
+            }
+        }
+    }
+
+
+    suspend fun syncWithFavorites(meals: List<Meal>) {
+        getFavoriteRecipes()
+        meals.forEach { meal ->
+            meal.isFavorite = favoriteIds.contains(meal.idMeal)
+            Log.d("MealSync", "Meal ID: ${meal.idMeal}, isFavorite: ${meal.isFavorite}")
+        }
+    }
+
 }

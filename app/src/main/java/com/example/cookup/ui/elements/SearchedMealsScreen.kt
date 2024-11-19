@@ -1,35 +1,26 @@
 package com.example.cookup.ui.elements
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.cookup.R
+import com.example.cookup.viewmodel.FavoritesViewModel
 import com.example.cookup.viewmodel.MealSearchViewModel
 
 // Екран для показу знайдених за пошуковим запитом рецептів
 @Composable
-fun SearchedMealsScreen(query: String, navController: NavHostController) {
+fun SearchedMealsScreen(
+    query: String,
+    navController: NavHostController,
+    favoritesViewModel: FavoritesViewModel
+) {
     val viewModel: MealSearchViewModel = viewModel()
     LaunchedEffect(query) {
         viewModel.searchMeals(query)
@@ -55,7 +46,13 @@ fun SearchedMealsScreen(query: String, navController: NavHostController) {
                 )
             }
             else -> {
-                MealGrid(meals, navController, "Meals found by query: $query", iconOn = false)
+                MealGrid(
+                    meals,
+                    navController,
+                    "Meals found by query: $query",
+                    iconOn = false,
+                    favoritesViewModel
+                )
             }
         }
     }
