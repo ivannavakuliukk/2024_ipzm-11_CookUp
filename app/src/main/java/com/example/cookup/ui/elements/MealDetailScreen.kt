@@ -34,7 +34,6 @@ fun MealDetailScreen(
     favoritesViewModel: FavoritesViewModel
 ) {
     val viewModel: MealDetailViewModel = viewModel()
-    val favoritesViewModel: FavoritesViewModel = viewModel()
     val mealDetail by viewModel.mealDetail
 
     // Завантажити деталі страви за ідентифікатором, коли цей Composable створено вперше
@@ -42,7 +41,7 @@ fun MealDetailScreen(
         viewModel.fetchMealById(idMeal)
     }
     mealDetail?.let { meal->
-        meal.isFavorite = viewModel.isElementFavorite(meal.idMeal)
+        meal.isFavorite = viewModel.isElementFavorite(meal.idMeal, favoritesViewModel.favoriteIds)
         val isFavorite = mutableStateOf(meal.isFavorite)
         LaunchedEffect(meal.isFavorite) {
             isFavorite.value = meal.isFavorite

@@ -21,12 +21,12 @@ class MealSearchViewModel : ViewModel() {
         private set
 
     // Функція для пошуку страв за запитом
-    fun searchMeals(query: String) {
+    fun searchMeals(query: String, ids: List<String>) {
         if (query.length < 3) return // Перевірка мінімальної довжини запиту
         isLoading = true
         viewModelScope.launch {
             val fetchedMeals = mealRepository.searchMeals(query)
-            mealRepository.syncWithFavorites(fetchedMeals)
+            mealRepository.syncWithFavorites(fetchedMeals, ids)
             mealsList.clear()
             mealsList.addAll(fetchedMeals)
             isLoading = false

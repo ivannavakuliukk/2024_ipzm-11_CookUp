@@ -16,10 +16,10 @@ class AreaMealsViewModel : ViewModel() {
         private set
 
     // Функція для отримання страв за областю
-    fun loadMealsByArea(area: String) {
+    fun loadMealsByArea(area: String, ids: List<String>) {
         viewModelScope.launch {
             val fetchedMeals = mealRepository.fetchMealsByArea(area)
-            mealRepository.syncWithFavorites(fetchedMeals)
+            mealRepository.syncWithFavorites(fetchedMeals, ids)
             mealsList.clear()
             mealsList.addAll(fetchedMeals)
         }

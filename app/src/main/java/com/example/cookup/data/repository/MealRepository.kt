@@ -26,18 +26,30 @@ class MealRepository {
     private val database = FirebaseDatabase.getInstance()
     private val userId = FirebaseAuth.getInstance().currentUser?.uid
 
-    // Метод для отримання випадкових страв
+    // Метод для отримання випадкових страв - використовуємо асинхронні запити
     suspend fun fetchRandomMeals() {
-        val fetchedMeals = (1..30).mapNotNull {
+        coroutineScope {
             try {
-                RetrofitInstance.api.getRandomMeal().meals?.firstOrNull()
+                // Виконуємо 20 запитів паралельно
+                val deferredMeals = (1..30).map {
+                    async {
+                        try {
+                            RetrofitInstance.api.getRandomMeal().meals?.firstOrNull()
+                        } catch (e: Exception) {
+                            Log.e("MealRepository", "Error fetching random meal in async", e)
+                            null
+                        }
+                    }
+                }
+                val fetchedMeals = deferredMeals.awaitAll().filterNotNull()
+
+                // Оновлюємо список страв
+                recommendedMeals.clear()
+                recommendedMeals.addAll(fetchedMeals)
             } catch (e: Exception) {
-                Log.e("MealRepository", "Error fetching random meal", e)
-                null
+                Log.e("MealRepository", "Error fetching random meals", e)
             }
         }
-        recommendedMeals.clear()
-        recommendedMeals.addAll(fetchedMeals)
     }
 
     // Функція для отримання страви за ID
@@ -165,7 +177,7 @@ class MealRepository {
         }
     }
 
-    // Отримати обрані рецепти користувача
+    // Отримати обрані рецепти користувача - використовуємо асинхронні запити
     suspend fun getFavoriteRecipes() {
         userId?.let { id ->
             try {
@@ -189,10 +201,10 @@ class MealRepository {
     }
 
 
-    suspend fun syncWithFavorites(meals: List<Meal>) {
+    suspend fun syncWithFavorites(meals: List<Meal>, ids:List<String>) {
         getFavoriteRecipes()
         meals.forEach { meal ->
-            meal.isFavorite = favoriteIds.contains(meal.idMeal)
+            meal.isFavorite = ids.contains(meal.idMeal)
             Log.d("MealSync", "Meal ID: ${meal.idMeal}, isFavorite: ${meal.isFavorite}")
         }
     }

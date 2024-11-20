@@ -15,10 +15,10 @@ class CategoryMealsViewModel : ViewModel() {
     var mealsList = mutableStateListOf<Meal>()
         private set
 
-    fun loadMealsByCategory(category: String) {
+    fun loadMealsByCategory(category: String, ids: List<String>) {
         viewModelScope.launch {
             val fetchedMeals = mealRepository.fetchMealsByCategory(category)
-            mealRepository.syncWithFavorites(fetchedMeals)
+            mealRepository.syncWithFavorites(fetchedMeals, ids)
             mealsList.clear()
             mealsList.addAll(fetchedMeals)
         }

@@ -16,27 +16,32 @@ class MealViewModel : ViewModel() {
     val mealsList: List<Meal> get() = mealRepository.recommendedMeals
     var isLoading by mutableStateOf(false)
         private set
+    private var favoriteIds: List<String> = emptyList()
 
     init {
         fetchRandomMeals()
     }
 
     // Оновлення списку випадкових страв
-    private fun fetchRandomMeals() {
+    fun fetchRandomMeals() {
         isLoading = true
         viewModelScope.launch {
             mealRepository.fetchRandomMeals()
-            syncWithFavorites()
+            syncWithFavorites(favoriteIds)
             isLoading = false
         }
     }
 
-    fun syncWithFavorites(){
+    fun syncWithFavorites(ids: List<String>){
         isLoading = true
         viewModelScope.launch {
-            mealRepository.syncWithFavorites(mealsList)
+            mealRepository.syncWithFavorites(mealsList, ids)
             isLoading = false
         }
+    }
+
+    fun setFavoriteIds(favoriteIds: List<String>) {
+        this.favoriteIds = favoriteIds
     }
 }
 

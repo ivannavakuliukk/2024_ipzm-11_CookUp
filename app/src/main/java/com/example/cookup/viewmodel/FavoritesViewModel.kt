@@ -16,6 +16,7 @@ import kotlin.time.measureTimedValue
 class FavoritesViewModel: ViewModel() {
     private val mealRepository = MealRepository()
     val mealsList: List<Meal> get() = mealRepository.favoriteMeals
+    val favoriteIds: List<String> get() = mealRepository.favoriteIds
     // Стан завантаження
     var isLoading by mutableStateOf(false)
         private set

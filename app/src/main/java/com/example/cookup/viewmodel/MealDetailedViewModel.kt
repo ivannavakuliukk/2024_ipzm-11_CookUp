@@ -20,7 +20,6 @@ class MealDetailViewModel : ViewModel() {
     fun fetchMealById(idMeal: String) {
         viewModelScope.launch {
             try {
-                mealRepository.getFavoriteRecipes()
                 val mealData = mealRepository.fetchMealById(idMeal)
                 if (mealData != null) {
                     Log.d("MealDetailViewModel", "Fetching meal with ID: $idMeal, ${mealData.isFavorite}")
@@ -53,7 +52,7 @@ class MealDetailViewModel : ViewModel() {
             }
         }
     }
-    fun isElementFavorite(idMeal: String):Boolean{
-        return mealRepository.favoriteIds.contains(idMeal)
+    fun isElementFavorite(idMeal: String, ids: List<String>):Boolean{
+        return ids.contains(idMeal)
     }
 }

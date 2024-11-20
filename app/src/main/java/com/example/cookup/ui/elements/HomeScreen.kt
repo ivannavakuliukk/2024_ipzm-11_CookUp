@@ -19,8 +19,9 @@ import com.example.cookup.viewmodel.MealViewModel
 fun HomeScreen(navController: NavHostController, favoritesViewModel: FavoritesViewModel) {
     val mealViewModel: MealViewModel = viewModel() // Отримуємо ViewModel для роботи з даними страв
     val meals = mealViewModel.mealsList
+    mealViewModel.setFavoriteIds(favoritesViewModel.favoriteIds)
     LaunchedEffect(favoritesViewModel.mealsList) {
-        mealViewModel.syncWithFavorites()
+        mealViewModel.syncWithFavorites(favoritesViewModel.favoriteIds)
     }
     // Показуємо індикатор завантаження, поки список порожній
     if (meals.isEmpty() || mealViewModel.isLoading) {

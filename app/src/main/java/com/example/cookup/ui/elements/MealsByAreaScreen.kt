@@ -19,7 +19,7 @@ fun MealsByAreaScreen(
     val viewModel: AreaMealsViewModel = viewModel()
     // Завантажуємо страви за категорією
     LaunchedEffect(area) {
-        viewModel.loadMealsByArea(area)
+        viewModel.loadMealsByArea(area, favoritesViewModel.favoriteIds)
     }
     val meals = viewModel.mealsList
     if (meals.isEmpty()) {

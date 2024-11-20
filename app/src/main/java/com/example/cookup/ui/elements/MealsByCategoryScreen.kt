@@ -23,7 +23,7 @@ fun MealsByCategoryScreen(
     val viewModel: CategoryMealsViewModel = viewModel()
     // Завантажуємо страви за категорією
     LaunchedEffect(category) {
-        viewModel.loadMealsByCategory(category)
+        viewModel.loadMealsByCategory(category, favoritesViewModel.favoriteIds)
     }
     val meals = viewModel.mealsList
 

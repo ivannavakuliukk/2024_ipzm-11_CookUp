@@ -23,7 +23,7 @@ fun SearchedMealsScreen(
 ) {
     val viewModel: MealSearchViewModel = viewModel()
     LaunchedEffect(query) {
-        viewModel.searchMeals(query)
+        viewModel.searchMeals(query, favoritesViewModel.favoriteIds)
     }
     val meals = viewModel.mealsList
     val isLoading = viewModel.isLoading
