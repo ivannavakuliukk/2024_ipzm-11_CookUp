@@ -31,7 +31,7 @@ class MealRepository {
         coroutineScope {
             try {
                 // Виконуємо 20 запитів паралельно
-                val deferredMeals = (1..30).map {
+                val deferredMeals = (1..16).map {
                     async {
                         try {
                             RetrofitInstance.api.getRandomMeal().meals?.firstOrNull()
@@ -42,9 +42,11 @@ class MealRepository {
                     }
                 }
                 val fetchedMeals = deferredMeals.awaitAll().filterNotNull()
-
+                // Перевіряємо страви на унікальність
+                val uniqueMeals = fetchedMeals.filter { meal ->
+                    recommendedMeals.none { it.idMeal == meal.idMeal }
+                }
                 // Оновлюємо список страв
-                recommendedMeals.clear()
                 recommendedMeals.addAll(fetchedMeals)
             } catch (e: Exception) {
                 Log.e("MealRepository", "Error fetching random meals", e)

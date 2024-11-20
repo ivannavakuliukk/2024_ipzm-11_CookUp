@@ -8,13 +8,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cookup.data.models.Meal
 import com.example.cookup.data.repository.MealRepository
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 // ViewModel для завантаження рекомендованих страв
 class MealViewModel : ViewModel() {
     private val mealRepository = MealRepository()
     val mealsList: List<Meal> get() = mealRepository.recommendedMeals
+    var isFirstLoading by mutableStateOf(false)
+        private set
     var isLoading by mutableStateOf(false)
+        private set
+    var isSynchronized by mutableStateOf(false)
         private set
     private var favoriteIds: List<String> = emptyList()
 
@@ -24,19 +29,30 @@ class MealViewModel : ViewModel() {
 
     // Оновлення списку випадкових страв
     fun fetchRandomMeals() {
-        isLoading = true
+        if (mealsList.isEmpty()){
+            isFirstLoading = true
+        }else{
+            isLoading = true
+        }
         viewModelScope.launch {
             mealRepository.fetchRandomMeals()
-            syncWithFavorites(favoriteIds)
+            syncWithFavorites()
+            isFirstLoading = false
             isLoading = false
         }
     }
 
-    fun syncWithFavorites(ids: List<String>){
-        isLoading = true
+    private fun syncWithFavorites(){
+        viewModelScope.launch {
+            mealRepository.syncWithFavorites(mealsList, favoriteIds)
+        }
+    }
+
+    fun syncWithFavorites2(ids: List<String>){
+        isSynchronized = true
         viewModelScope.launch {
             mealRepository.syncWithFavorites(mealsList, ids)
-            isLoading = false
+            isSynchronized = false
         }
     }
 
