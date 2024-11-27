@@ -71,6 +71,12 @@ val CustomTypography = Typography(
         fontSize = 20.sp,
         fontWeight = FontWeight.Bold,
         letterSpacing = 0.15.sp
+    ),
+    displaySmall =  TextStyle(
+        fontFamily = Poppins,
+        fontSize = 11.sp,
+        fontWeight = FontWeight.Normal,
+        letterSpacing = 0.5.sp
     )
 )
 
