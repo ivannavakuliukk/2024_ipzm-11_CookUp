@@ -17,8 +17,8 @@ import com.example.cookup.R
 
 private val LightColorScheme = lightColorScheme(
     primary = Color.White,
-    secondary = Pink,
-    tertiary = Red,
+    secondary = Color(0xFFFFC6C9),
+    tertiary = Color(0xFFFD5D69),
     onPrimary = Color.Black
 
     /* Other default colors to override
