@@ -142,11 +142,16 @@ fun MyTopAppBar(userName: String?, navController: NavHostController,) {
                 contentPadding = PaddingValues(0.dp)
             ) {
                 items(recommendedQueries) { suggestion ->
-                    TextButton(onClick = { query = suggestion }) {
+                    Button(
+                        onClick = {query = suggestion },
+                        modifier = Modifier
+                            .padding(top = 5.dp, bottom = 5.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
+                    ) {
                         Text(
                             text = suggestion,
-                            style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.primary),
-                            modifier = Modifier.background(MaterialTheme.colorScheme.tertiary)
+                            style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.tertiary),
+                            modifier = Modifier.background(MaterialTheme.colorScheme.secondary)
                                 .padding(4.dp)
                         )
                     }
