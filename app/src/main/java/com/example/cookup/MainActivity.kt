@@ -71,7 +71,7 @@ fun NavigationGraph(navController: NavHostController, paddingValues: PaddingValu
         }
         composable("categories") { CategoriesScreen(navController) }
         composable("favorites") { FavoritesScreen(navController, favoritesViewModel) }
-        composable("profile") { ProfileScreen() }
+        composable("profile") { ProfileScreen(navController, favoritesViewModel) }
         // Екран з деталями страви, який приймає idMeal як аргумент
         composable("mealDetail/{idMeal}") { backStackEntry ->
             val idMeal = backStackEntry.arguments?.getString("idMeal") ?: return@composable // Отримуємо idMeal з аргументів

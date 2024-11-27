@@ -11,6 +11,7 @@ import com.example.cookup.data.models.Meal
 import com.example.cookup.data.models.MealResponse
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.getValue
 import kotlinx.coroutines.tasks.await
 import retrofit2.await
 import kotlinx.coroutines.async
@@ -202,12 +203,42 @@ class MealRepository {
         }
     }
 
-
+    // Метод для синхронізації з favorite
     suspend fun syncWithFavorites(meals: List<Meal>, ids:List<String>) {
         getFavoriteRecipes()
         meals.forEach { meal ->
             meal.isFavorite = ids.contains(meal.idMeal)
             Log.d("MealSync", "Meal ID: ${meal.idMeal}, isFavorite: ${meal.isFavorite}")
+        }
+    }
+
+    // Метод для додавання авторського рецепту до Firebase
+    suspend fun addMealToFirebase(meal: Meal) {
+        val mealRef = userId?.let { database.reference.child("new_recipes").child("users").child(it).child(meal.idMeal) }
+        try {
+            mealRef?.setValue(meal.toMap())?.await()
+        } catch (e: Exception) {
+            Log.e("MealRepository","Failed to add meal: ${e.message}")
+        }
+    }
+
+    // Метод для отримання всіх авторських рецептів користувача з Firebase
+    suspend fun getMealsFromFirebase(): List<Meal> {
+        val mealsRef = userId?.let { database.reference.child("new_recipes").child("users").child(it) }
+        return try {
+            val snapshot = mealsRef?.get()?.await()
+            val meals = mutableListOf<Meal>()
+            if (snapshot != null) {
+                snapshot.children.forEach { dataSnapshot ->
+                    val meal = dataSnapshot.getValue<Meal>()
+                    if (meal != null) meals.add(meal)
+                }
+            }
+            Log.d("MealRepository","Meals fetched ")
+            meals
+        } catch (e: Exception) {
+            Log.e("MealRepository","Failed to retrieve meals: ${e.message}")
+            throw Exception("Failed to retrieve meals: ${e.message}")
         }
     }
 

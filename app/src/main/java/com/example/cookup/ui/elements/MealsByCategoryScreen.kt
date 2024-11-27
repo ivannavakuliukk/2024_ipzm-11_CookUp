@@ -25,9 +25,12 @@ fun MealsByCategoryScreen(
     LaunchedEffect(category) {
         viewModel.loadMealsByCategory(category, favoritesViewModel.favoriteIds)
     }
+    LaunchedEffect(favoritesViewModel.favoriteIds){
+        viewModel.syncWithFavorites(favoritesViewModel.favoriteIds)
+    }
     val meals = viewModel.mealsList
 
-    if (meals.isEmpty()) {
+    if (meals.isEmpty() || viewModel.isSynchronized) {
         Box(contentAlignment = Alignment.Center,modifier = Modifier.fillMaxSize()) {
             CircularProgressIndicator(color = MaterialTheme.colorScheme.secondary)
         }

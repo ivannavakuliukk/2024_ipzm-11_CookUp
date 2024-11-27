@@ -42,9 +42,6 @@ class MealDetailViewModel : ViewModel() {
                         ingredients = ingredients,
                         measures = measures,
                     )
-
-                    Log.d("MealDetailViewModel", "Ingredients: $ingredients")
-                    Log.d("MealDetailViewModel", "Measures: $measures")
                 }
             } catch (e: Exception) {
                 Log.e("MealDetailViewModel", "Error fetching meal details", e)

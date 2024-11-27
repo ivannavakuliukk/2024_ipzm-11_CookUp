@@ -4,6 +4,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.navigation.NavHostController
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -20,6 +23,9 @@ fun MealsByAreaScreen(
     // Завантажуємо страви за категорією
     LaunchedEffect(area) {
         viewModel.loadMealsByArea(area, favoritesViewModel.favoriteIds)
+    }
+    LaunchedEffect(favoritesViewModel.favoriteIds){
+        viewModel.syncWithFavorites(favoritesViewModel.favoriteIds)
     }
     val meals = viewModel.mealsList
     if (meals.isEmpty()) {

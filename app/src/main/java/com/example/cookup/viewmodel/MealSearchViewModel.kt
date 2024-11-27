@@ -19,6 +19,8 @@ class MealSearchViewModel : ViewModel() {
         private set
     var mealsList = mutableStateListOf<Meal>()
         private set
+    var isSynchronized by mutableStateOf(false)
+        private set
 
     // Функція для пошуку страв за запитом
     fun searchMeals(query: String, ids: List<String>) {
@@ -30,6 +32,13 @@ class MealSearchViewModel : ViewModel() {
             mealsList.clear()
             mealsList.addAll(fetchedMeals)
             isLoading = false
+        }
+    }
+    fun syncWithFavorites(ids: List<String>){
+        isSynchronized = true
+        viewModelScope.launch {
+            mealRepository.syncWithFavorites(mealsList, ids)
+            isSynchronized = false
         }
     }
 }

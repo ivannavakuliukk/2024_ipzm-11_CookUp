@@ -101,7 +101,7 @@ fun DisplayMealDetails(
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
             modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
         ) {
-            Text(text = if (isFavorite.value) "Remove from Favorites" else "Add to Favorites", style = MaterialTheme.typography.bodyMedium)
+            Text(text = if (isFavorite.value) "Remove from Favorites" else "Add to Favorites", style = MaterialTheme.typography.bodySmall)
         }
         Spacer(modifier = Modifier.height(8.dp))
         Text(

@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cookup.data.models.Meal
 import com.example.cookup.data.repository.MealRepository
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 // ViewModel для завантаження рекомендованих страв
