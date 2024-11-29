@@ -14,6 +14,7 @@ data class Meal(
     val idMeal:String,
     // Назва страви
     val strMeal: String,
+    var author: String = "",
 
     // URL-адреса зображення страви
     val strMealThumb: String,
@@ -77,7 +78,7 @@ data class Meal(
     @JvmField val strMeasure17: String? = null,
     @JvmField val strMeasure18: String? = null,
     @JvmField val strMeasure19: String? = null,
-    @JvmField val strMeasure20: String? = null
+    @JvmField val strMeasure20: String? = null,
 
 ){
     var isFavorite = false
@@ -91,8 +92,9 @@ data class Meal(
             "strCategory" to strCategory,
             "strInstructions" to strInstructions,
             "ingredients" to ingredients,
-            "measures" to measures
+            "measures" to measures,
+            "author" to author
         )
     }
-    constructor() : this("", "", "", "", "", "", listOf(), listOf())
+    constructor() : this("","","", "", "", "", "", listOf(), listOf())
 }

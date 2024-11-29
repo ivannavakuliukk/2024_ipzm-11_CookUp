@@ -113,7 +113,7 @@ fun DisplayMealDetails(
                 color = Color(0xFFFD5D69)
             )
             Text(
-                text = "${meal.strCategory}",
+                text = meal.strCategory,
                 style = MaterialTheme.typography.bodyMedium
             )
         }
@@ -125,7 +125,7 @@ fun DisplayMealDetails(
                 color = Color(0xFFFD5D69)
             )
             Text(
-                text = "${meal.strArea}",
+                text = meal.strArea,
                 style = MaterialTheme.typography.bodyMedium,
             )
         }

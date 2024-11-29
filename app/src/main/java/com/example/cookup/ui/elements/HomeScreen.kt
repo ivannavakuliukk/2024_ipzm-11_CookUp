@@ -2,13 +2,16 @@ package com.example.cookup.ui.elements
 
 
 import android.util.Log
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -18,6 +21,8 @@ import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -80,6 +85,19 @@ fun HomeScreen(navController: NavHostController, favoritesViewModel: FavoritesVi
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             state = lazyListState
         ) {
+            item(span = { GridItemSpan(2) }) {
+                Button(
+                    onClick = {  navController.navigate("users_meals") },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.tertiary.copy(0.1f),
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
+                ) {
+                    Text(text = "View Author`s recipes", style = MaterialTheme.typography.bodySmall)
+                }
+            }
             item(span = { GridItemSpan(2) }) {
                 Row(
                     modifier = Modifier.padding(0.dp).heightIn(max = 25.dp)

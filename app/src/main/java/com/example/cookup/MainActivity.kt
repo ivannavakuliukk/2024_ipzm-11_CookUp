@@ -22,9 +22,12 @@ import com.example.cookup.ui.elements.MealsByAreaScreen
 import com.example.cookup.ui.elements.MealsByCategoryScreen
 import com.example.cookup.ui.elements.MyTopAppBar
 import com.example.cookup.ui.elements.ProfileScreen
+import com.example.cookup.ui.elements.UserMealDetailScreen
 import com.example.cookup.ui.elements.SearchedMealsScreen
+import com.example.cookup.ui.elements.UserMealsScreen
 import com.example.cookup.ui.theme.CookUpTheme
 import com.example.cookup.viewmodel.FavoritesViewModel
+import com.example.cookup.viewmodel.UserMealsViewModel
 
 
 // Головна активність додатку
@@ -47,10 +50,16 @@ class MainActivity : ComponentActivity() {
                 ) { paddingValues ->
                     Column {
                         MyTopAppBar(userName = currentUser?.displayName, navController) // Додаємо TopAppBar
-                        NavigationGraph(
-                            navController = navController,
-                            paddingValues = paddingValues
-                        )
+                        currentUser?.displayName?.let {
+                            currentUser.photoUrl?.toString()?.let { it1 ->
+                                NavigationGraph(
+                                    navController = navController,
+                                    paddingValues = paddingValues,
+                                    name = it,
+                                    photoUrl = "$it1?sz=500"
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -61,8 +70,9 @@ class MainActivity : ComponentActivity() {
 
 // Функція навігації
 @Composable
-fun NavigationGraph(navController: NavHostController, paddingValues: PaddingValues) {
+fun NavigationGraph(navController: NavHostController, paddingValues: PaddingValues, name: String, photoUrl:String) {
     val favoritesViewModel: FavoritesViewModel = viewModel()
+    val userMealsViewModel: UserMealsViewModel = viewModel()
     // Визначаємо основні маршрути навігації
     NavHost(navController = navController, startDestination = "home", modifier = Modifier.padding(paddingValues)) {
         // Головний екран зі списком страв - початкова точка
@@ -71,7 +81,8 @@ fun NavigationGraph(navController: NavHostController, paddingValues: PaddingValu
         }
         composable("categories") { CategoriesScreen(navController) }
         composable("favorites") { FavoritesScreen(navController, favoritesViewModel) }
-        composable("profile") { ProfileScreen(navController, favoritesViewModel) }
+        composable("profile") { ProfileScreen(navController, name, photoUrl) }
+        composable("users_meals") { UserMealsScreen(navController, userMealsViewModel) }
         // Екран з деталями страви, який приймає idMeal як аргумент
         composable("mealDetail/{idMeal}") { backStackEntry ->
             val idMeal = backStackEntry.arguments?.getString("idMeal") ?: return@composable // Отримуємо idMeal з аргументів
@@ -88,6 +99,10 @@ fun NavigationGraph(navController: NavHostController, paddingValues: PaddingValu
         composable("searchedMeals/{query}") { backStackEntry ->
             val query = backStackEntry.arguments?.getString("query") ?: return@composable
             SearchedMealsScreen(query = query, navController, favoritesViewModel)
+        }
+        composable("UserMealDetail/{idMeal}") { backStackEntry ->
+            val idMeal = backStackEntry.arguments?.getString("idMeal") ?: return@composable
+            UserMealDetailScreen(idMeal, navController, userMealsViewModel)
         }
     }
 }
